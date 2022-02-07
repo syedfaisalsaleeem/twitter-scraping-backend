@@ -14,6 +14,7 @@ class Controller():
         key_phrases = self.key_phrases
         start_date = self.start_date
         end_date = self.end_date
+        limit = 500
         
         # Get the tweets
         tweets_list2 = []
@@ -30,7 +31,7 @@ class Controller():
             # Using TwitterSearchScraper to scrape data and append tweets to list
             for i, tweet in enumerate(sntwitter.
                                     TwitterSearchScraper(f'{key_phrase} since:{start_date} until:{end_date}').get_items()):
-                if count > 500:
+                if count > limit:
                     print('Updating Data')
                     count = 0
                     print(f'Latest Stored Tweet Date: {tweet.date}')
@@ -47,6 +48,7 @@ class Controller():
                         tweets_df2 = pd.DataFrame(
                         tweets_list2, columns=data_attributes_list)
                         tweets_df2.to_csv(str(id_to_update)+'.csv')
+                    break
 
                     # break
                 print(f'{len(tweets_list2)} tweets scrapped for "{key_phrase}". Tweet Date: {tweet.date}')
