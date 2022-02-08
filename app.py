@@ -1,4 +1,3 @@
-from msilib.schema import Control
 from flask import Flask, jsonify,request
 from controller import Controller, Controller2
 from pymongo import MongoClient
@@ -14,7 +13,7 @@ def twitter():
         request_data = request.get_json()
         response = Controller(request_data['key_phrases'], request_data['start_date'], request_data['end_date'],db).start()
         return jsonify({"status": response[0]})
-        
+
     elif request.method == 'GET':
         return jsonify({"body":Controller2().get_twitter(db)})
 
@@ -23,4 +22,4 @@ def get_specific_keyphrase(keyphrase_id):
     return jsonify({"body":Controller2().get_specific_keyphrase(db, keyphrase_id)})
 
 if __name__ == "__main__":
-  app.run()
+  app.run(host='127.0.0.1', port='8080', debug=False)
