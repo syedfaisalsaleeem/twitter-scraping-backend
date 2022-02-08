@@ -61,7 +61,8 @@ class Controller():
                 tweets_list2.append(dict(items))
 
             # Insert data into MongoDB
-            id_to_update = MongoDBPython(self.db).insert_data(data)
+            if id_to_update == None:
+                MongoDBPython(self.db).insert_data(data)
 
 
     def start(self):
