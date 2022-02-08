@@ -40,17 +40,10 @@ class Controller():
                     if insert == 0 :
                         insert = 1
                         id_to_update = MongoDBPython(self.db).insert_data(data)
-                        tweets_df2 = pd.DataFrame(
-                        tweets_list2, columns=data_attributes_list)
-                        tweets_df2.to_csv(str(id_to_update)+'.csv')
                     else:
                         MongoDBPython(self.db).update_data(id_to_update,tweets_list2)
-                        tweets_df2 = pd.DataFrame(
-                        tweets_list2, columns=data_attributes_list)
-                        tweets_df2.to_csv(str(id_to_update)+'.csv')
                     break
 
-                    # break
                 print(f'{len(tweets_list2)} tweets scrapped for "{key_phrase}". Tweet Date: {tweet.date}')
                 count += 1
                 values = [str(tweet.url), str(tweet.date), str(tweet.content), str(tweet.renderedContent), str(tweet.id), str(tweet.user.username),
@@ -69,9 +62,7 @@ class Controller():
 
             # Insert data into MongoDB
             id_to_update = MongoDBPython(self.db).insert_data(data)
-            tweets_df2 = pd.DataFrame(
-            tweets_list2, columns=data_attributes_list)
-            tweets_df2.to_csv(str(id_to_update)+'.csv')
+
 
     def start(self):
         try:
