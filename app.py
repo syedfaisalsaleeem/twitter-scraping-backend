@@ -1,11 +1,15 @@
 from flask import Flask, jsonify,request
 from controller import Controller, Controller2
 from pymongo import MongoClient
+from flask_cors import CORS, cross_origin
+
 client = MongoClient("mongodb://localhost:27017/")
 db = client['database']
 
 app = Flask(__name__)
 app.debug = True
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/twitter", methods=['POST','GET'])
 def twitter():
