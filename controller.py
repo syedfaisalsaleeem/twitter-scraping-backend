@@ -1,68 +1,71 @@
-from utility import data_attributes_list
+from store_data import StoreData
 import snscrape.modules.twitter as sntwitter
-import pandas as pd
-from _mongodb import MongoDBPython
+
 
 class Controller():
-    def __init__(self, *args):
-        self.key_phrases = args[0]
-        self.start_date = args[1]
-        self.end_date = args[2]
-        self.db = args[3]
+    def __init__(self, key_phrases, start_date, end_date, method, breaking=False):
+        self.key_phrases = key_phrases
+        self.start_date = start_date
+        self.end_date = end_date
+        self.method = method
+        self.breaking = breaking
 
     def twitter_crawler(self):
         key_phrases = self.key_phrases
         start_date = self.start_date
         end_date = self.end_date
-        limit = 500
+        limit = 1000
+        
         
         # Get the tweets
         tweets_list2 = []
-        data = {'key_phrase': '','data':tweets_list2 ,'start_date': None, 'end_date': None}
-
         for key_phrase in key_phrases:
-            data['key_phrase'] = key_phrase
-            data['start_date'] = start_date
-            data['end_date'] = end_date
             count = 0
-            insert = 0 
-            id_to_update = None
-            csv_filename = f'{key_phrase}-{start_date}_{end_date}.csv'
+            data_inserted = False 
+            store = StoreData(start_date, end_date, method=self.method, keyword=key_phrase)
             # Using TwitterSearchScraper to scrape data and append tweets to list
             for i, tweet in enumerate(sntwitter.
                                     TwitterSearchScraper(f'{key_phrase} since:{start_date} until:{end_date}').get_items()):
                 if count > limit:
                     print('Updating Data')
                     count = 0
-                    print(f'Latest Stored Tweet Date: {tweet.date}')
-                    data['data'] = tweets_list2
-                    # Insert data into MongoDB
-                    if insert == 0 :
-                        insert = 1
-                        id_to_update = MongoDBPython(self.db).insert_data(data)
-                    else:
-                        MongoDBPython(self.db).update_data(id_to_update,tweets_list2)
-                    break
+                    data_inserted = True
+                    try:
+                        # Insert data into csv file
+                        store.store_csv(tweets_list2)
+                        print(f'Latest Stored Tweet Date: {tweet.date}')
+                        store.store_csv_s3()
+                        print('files upload in s3')
+                    except Exception as e:
+                        print(e)
+                        print('Error in storing data')
+                    if self.breaking == True:
+                        break
 
                 print(f'{len(tweets_list2)} tweets scrapped for "{key_phrase}". Tweet Date: {tweet.date}')
                 count += 1
-                values = [str(tweet.url), str(tweet.date), str(tweet.content), str(tweet.renderedContent), str(tweet.id), str(tweet.user.username),
-                                    str(tweet.user.id), str(tweet.user.displayname), str(tweet.user.description), str(tweet.user.rawDescription),
-                                    str(tweet.user.descriptionUrls), str(tweet.user.verified), str(tweet.user.created),
-                                    str(tweet.user.followersCount), str(tweet.user.friendsCount), str(tweet.user.statusesCount),
-                                    str(tweet.user.favouritesCount), str(tweet.user.listedCount), str(tweet.user.mediaCount),
-                                    str(tweet.user.location), str(tweet.user.protected), str(tweet.user.linkUrl), str(tweet.user.linkTcourl),
-                                    str(tweet.user.profileImageUrl), str(tweet.user.profileBannerUrl), str(tweet.user.label), str(tweet.user),
-                                    str(tweet.replyCount), str(tweet.retweetCount), str(tweet.likeCount), str(tweet.quoteCount),
-                                    str(tweet.conversationId), str(tweet.lang), str(tweet.source), str(tweet.sourceUrl), str(tweet.sourceLabel),
-                                    str(tweet.outlinks), str(tweet.tcooutlinks), str(tweet.media), str(tweet.retweetedTweet), str(tweet.quotedTweet),
-                                    str(tweet.mentionedUsers), str(tweet.coordinates), str(tweet.place), str(tweet.hashtags), str(tweet.cashtags)]
-                items = {i:y for i,y in zip(data_attributes_list, values)}
-                tweets_list2.append(dict(items))
+                values = [tweet.url, tweet.date, tweet.content, tweet.renderedContent, tweet.id, tweet.user.username,
+                             tweet.user.id, tweet.user.displayname, tweet.user.description, tweet.user.rawDescription,
+                             tweet.user.descriptionUrls, tweet.user.verified, tweet.user.created,
+                             tweet.user.followersCount, tweet.user.friendsCount, tweet.user.statusesCount,
+                             tweet.user.favouritesCount, tweet.user.listedCount, tweet.user.mediaCount,
+                             tweet.user.location, tweet.user.protected, tweet.user.linkUrl, tweet.user.linkTcourl,
+                             tweet.user.profileImageUrl, tweet.user.profileBannerUrl, tweet.user.label, tweet.user,
+                             tweet.replyCount, tweet.retweetCount, tweet.likeCount, tweet.quoteCount,
+                             tweet.conversationId, tweet.lang, tweet.source, tweet.sourceUrl, tweet.sourceLabel,
+                             tweet.outlinks, tweet.tcooutlinks, tweet.media, tweet.retweetedTweet, tweet.quotedTweet,
+                             tweet.mentionedUsers, tweet.coordinates, tweet.place, tweet.hashtags, tweet.cashtags]
+                tweets_list2.append(values)
 
-            # Insert data into MongoDB
-            if id_to_update == None:
-                MongoDBPython(self.db).insert_data(data)
+            if data_inserted == False:
+                # Insert data into csv file
+                store.store_csv(tweets_list2)
+                print(f'Latest Stored Tweet Date: {tweet.date}')
+                # Upload csv file to S3
+                store.store_csv_s3()
+                print('files upload in s3')
+
+
 
 
     def start(self):
@@ -71,19 +74,3 @@ class Controller():
             return "sucessfull",200
         except Exception as e:
             return str(e),500
-
-class Controller2():
-    def get_twitter(self,db):
-        self.db = db
-        try:
-            return  MongoDBPython(self.db).get_all_twitter_key_phrases()
-        except Exception as e:
-            return str(e),500
-        
-    def get_specific_keyphrase(self, db, id):
-        self.db = db
-        try:
-            return  MongoDBPython(self.db).get_specific_keyphrasedata(id)
-        except Exception as e:
-            return str(e),500
-
