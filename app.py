@@ -9,6 +9,7 @@ app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 
 @app.route("/twitter", methods=['POST','GET'])
+@cross_origin()
 def twitter():
     if request.method == 'POST':
         from task_queue import twitter_scraping
