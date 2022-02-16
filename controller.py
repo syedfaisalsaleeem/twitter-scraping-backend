@@ -16,8 +16,9 @@ class Controller():
         end_date = self.end_date
         
         # Get the tweets
-        tweets_list2 = []
+        
         for key_phrase in key_phrases:
+            tweets_list2 = []
             store = StoreData(start_date, end_date, method=self.method, keyword=key_phrase)
             # Using TwitterSearchScraper to scrape data and append tweets to list
             for i, tweet in enumerate(sntwitter.
@@ -48,6 +49,8 @@ class Controller():
             except Exception as e:
                 print(e)
                 print('Error in storing data')
+
+            del tweets_list2
 
 
 
