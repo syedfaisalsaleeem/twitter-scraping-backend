@@ -18,9 +18,9 @@ class StoreData():
         self.csv_file = f'{self.start_date}-{self.end_date}-{calculate_timestamp()}.csv'
 
     def store_csv(self,data):
+        
         tweets_df2 = pd.DataFrame(
             data, columns=data_attributes_list)
-        print(self.csv_file)
         tweets_df2.to_csv(self.csv_file)
 
     def store_csv_s3(self):

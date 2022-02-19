@@ -43,7 +43,6 @@ class Controller():
             try:
                 # Insert data into csv file
                 store.store_csv(tweets_list2)
-                print(f'Latest Stored Tweet Date: {tweet.date}')
                 store.store_csv_s3()
                 print('files upload in s3')
             except Exception as e:
