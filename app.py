@@ -27,7 +27,7 @@ except Exception as e:
     print("error",e)
 
 @app.route("/twitter", methods=['POST','GET'])
-@jwt_required()
+@jwt_required(refresh=True)
 def twitter():
     if request.method == 'POST':
         from task_queue import twitter_scraping
