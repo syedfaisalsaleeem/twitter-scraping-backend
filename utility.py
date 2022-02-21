@@ -24,6 +24,21 @@ def calculate_timestamp():
     ts = ct.timestamp()
     return str(ts)
 
+def message(status, message):
+    response_object = {"status": status, "message": message}
+    return response_object
+
+def internal_err_resp():
+    err = message(False, "Something went wrong during the process!")
+    err["error_reason"] = "server_error"
+    return err, 500
+
+def err_resp(msg, reason, code):
+    err = message(False, msg)
+    err["error_reason"] = reason
+    return err, code
+
+
 def test_case_fortodays_date():
     x,y,z = get_today_date()
     if x != None and y != None and z != None:
@@ -39,17 +54,3 @@ def test_case_for_calculate_timestamp():
         return "test case passed"
     else:
         return "test case failed"
-    
-def message(status, message):
-    response_object = {"status": status, "message": message}
-    return response_object
-
-def internal_err_resp():
-    err = message(False, "Something went wrong during the process!")
-    err["error_reason"] = "server_error"
-    return err, 500
-
-def err_resp(msg, reason, code):
-    err = message(False, msg)
-    err["error_reason"] = reason
-    return err, code

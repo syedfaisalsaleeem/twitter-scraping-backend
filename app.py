@@ -20,6 +20,7 @@ app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client['authentication']
+db_twitter = client['twitter']
 try:
     auth = AuthenticationController(db).register(username="admin",password="cryptography")
     print(auth)
@@ -32,7 +33,7 @@ def twitter():
     if request.method == 'POST':
         from task_queue import twitter_scraping
         request_data = request.get_json()
-        twitter_scraping.apply_async(kwargs={"query":(request_data['key_phrases'], request_data['start_date'], request_data['end_date'], request_data['method'], request_data['break'])})       
+        twitter_scraping.apply_async(kwargs={"query":(request_data['key_phrases'], request_data['start_date'], request_data['end_date'], request_data['method'], request_data['break'],db_twitter)})       
         return jsonify({"status": "success"})
 
     elif request.method == 'GET':
@@ -52,6 +53,16 @@ def refresh():
     identity = get_jwt_identity()
     access_token = create_access_token(identity=identity)
     return jsonify(access_token=access_token)
+
+@app.route("/notification", methods=["GET"])
+@jwt_required(refresh=True)
+def notification():
+    from application.notification.controller import NotificationController
+    notification_controller = NotificationController(db_twitter)
+    notification_controller.delete_keyphrase()
+    data = notification_controller.get_all_keyphrases()
+    return data
+
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port='8080', debug=True)
