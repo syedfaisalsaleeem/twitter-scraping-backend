@@ -12,7 +12,7 @@ class NotificationController():
         try:
             resp = {}
             twitter_keyphrase_list = list()
-            for i in self.collection.find({},{"key_phrase":1,"start_date":1,"status":1}):
+            for i in self.collection.find({},{"key_phrase":1,"start_date":1,"status":1} , sort=[( "_id", -1 )]):
                 i['_id'] = str(i['_id'])
                 twitter_keyphrase_list.append(i)
             resp['data'] = twitter_keyphrase_list
