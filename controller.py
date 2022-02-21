@@ -23,7 +23,7 @@ class Controller():
         for insert_id,key_phrase in zip(insert_ids,key_phrases):
             tweets_list2 = []
             # store_data key represents the data needs to be stored in csv or not
-            store = StoreData(start_date, end_date, method=self.method, keyword=key_phrase, store_data=False)
+            store = StoreData(start_date, end_date, method=self.method, keyword=key_phrase, store_data=True)
             # Using TwitterSearchScraper to scrape data and append tweets to list
             for i, tweet in enumerate(sntwitter.
                                     TwitterSearchScraper(f'{key_phrase} since:{start_date} until:{end_date}').get_items()):
