@@ -5,7 +5,7 @@ from authentication_controller import AuthenticationController
 from extensions import register_extensions
 import os
 from datetime import timedelta
-from flask_cors import cross_origin
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 app.debug = True
@@ -14,6 +14,7 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 
 register_extensions(app)
+cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
@@ -28,20 +29,19 @@ try:
 except Exception as e:
     print("error",e)
 
-@cross_origin()
 @app.route("/twitter", methods=['POST','GET'])
 @jwt_required(refresh=True)
 def twitter():
     if request.method == 'POST':
         from task_queue import twitter_scraping
         request_data = request.get_json()
-        twitter_scraping.apply_async(kwargs={"query":(request_data['key_phrases'], request_data['start_date'], request_data['end_date'], request_data['method'], request_data['break'],db_twitter)})       
+        twitter_scraping.apply_async(kwargs={"query":(request_data['key_phrases'], request_data['start_date'], request_data['end_date'], request_data['method'], request_data['break'])})       
         return jsonify({"status": "success"})
 
     elif request.method == 'GET':
         return jsonify({"body":"true"})
 
-@cross_origin()
+
 @app.route("/login", methods=['POST'])
 def login():
     request_data = request.get_json()
@@ -57,7 +57,7 @@ def refresh():
     access_token = create_access_token(identity=identity)
     return jsonify(access_token=access_token)
 
-@cross_origin()
+
 @app.route("/notification", methods=["GET"])
 @jwt_required(refresh=True)
 def notification():
