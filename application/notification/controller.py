@@ -8,11 +8,11 @@ class NotificationController():
         self.db = db
         self.collection = self.db['notification']
 
-    def get_all_keyphrases(self):
+    def get_all_keyphrases(self,status):
         try:
             resp = {}
             twitter_keyphrase_list = list()
-            for i in self.collection.find({},{"key_phrase":1,"start_date":1,"status":1} , sort=[( "_id", -1 )]):
+            for i in self.collection.find({"status":status},{"key_phrase":1,"start_date":1,"status":1} , sort=[( "_id", -1 )]):
                 i['_id'] = str(i['_id'])
                 twitter_keyphrase_list.append(i)
             resp['data'] = twitter_keyphrase_list
@@ -23,7 +23,7 @@ class NotificationController():
     def delete_keyphrase(self):
         for i in self.collection.find({},{"key_phrase":1,"start_date":1,"status":1}):
             date_value = datetime.strptime(i['start_date'],'%Y-%m-%d')
-            if datetime.now() - date_value  > timedelta(days=5):
+            if datetime.now() - date_value  > timedelta(days=2):
                 self.collection.delete_one({"_id":ObjectId(i['_id'])})
         
         return "successfully removed"
@@ -35,6 +35,6 @@ def test_notification_controller():
     db = client['twitter']
     notification_controller = NotificationController(db)
     print(notification_controller.delete_keyphrase())
-    print(notification_controller.get_all_keyphrases())
+    print(notification_controller.get_all_keyphrases(status="pending"))
 
 # test_notification_controller()

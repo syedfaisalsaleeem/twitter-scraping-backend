@@ -62,9 +62,11 @@ def refresh():
 @jwt_required(refresh=True)
 def notification():
     from application.notification.controller import NotificationController
+    args = request.args
+    status = args.get("status", type=str)
     notification_controller = NotificationController(db_twitter)
     notification_controller.delete_keyphrase()
-    data = notification_controller.get_all_keyphrases()
+    data = notification_controller.get_all_keyphrases(status=status)
     return data
 
 

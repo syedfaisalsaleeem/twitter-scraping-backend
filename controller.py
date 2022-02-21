@@ -16,16 +16,14 @@ class Controller():
         key_phrases = self.key_phrases
         start_date = self.start_date
         end_date = self.end_date
-        
+        mongo_obj = MongoDBPython(self.db)
+        today_date = str(datetime.date.today())
+        insert_ids =[mongo_obj.insert_data({"key_phrase":key_phrase,"start_date":today_date,"status":"pending"})  for key_phrase in key_phrases ]
         # Get the tweets
-        
-        for key_phrase in key_phrases:
+        for insert_id,key_phrase in zip(insert_ids,key_phrases):
             tweets_list2 = []
-            today_date = str(datetime.date.today())
-            mongo_obj = MongoDBPython(self.db)
-            insert_id = mongo_obj.insert_data({"key_phrase":key_phrase,"start_date":today_date,"status":"pending"})
             # store_data key represents the data needs to be stored in csv or not
-            store = StoreData(start_date, end_date, method=self.method, keyword=key_phrase, store_data=True)
+            store = StoreData(start_date, end_date, method=self.method, keyword=key_phrase, store_data=False)
             # Using TwitterSearchScraper to scrape data and append tweets to list
             for i, tweet in enumerate(sntwitter.
                                     TwitterSearchScraper(f'{key_phrase} since:{start_date} until:{end_date}').get_items()):
@@ -74,9 +72,11 @@ def test_twitter_controller():
     try:
         client = MongoClient("mongodb://localhost:27017/")
         db_twitter = client['twitter']
-        res = Controller(key_phrases=['freekick'], start_date='2021-06-01', end_date="2021-06-02", method='scraped', breaking=True, db=db_twitter).start()
+        res = Controller(key_phrases=['freekick','futsol','cricket'], start_date='2021-06-01', end_date="2021-06-02", method='scraped', breaking=True, db=db_twitter).start()
         if res[1] == 200:
             print("test case passed")
+        else:
+            print(res)
     except Exception as e:
         print(e)
         print('test case failed')
