@@ -24,6 +24,8 @@ class Controller():
             tweets_list2 = []
             # store_data key represents the data needs to be stored in csv or not
             store = StoreData(start_date, end_date, method=self.method, keyword=key_phrase, store_data=True)
+            # update the status of the key_phrase to running
+            mongo_obj.update_data(insert_id,"processing")
             # Using TwitterSearchScraper to scrape data and append tweets to list
             for i, tweet in enumerate(sntwitter.
                                     TwitterSearchScraper(f'{key_phrase} since:{start_date} until:{end_date}').get_items()):
@@ -47,10 +49,10 @@ class Controller():
             try:
                 # Insert data into csv file
                 store.store_csv(tweets_list2)
-                store.store_csv_s3()
+                s3_path = store.store_csv_s3()
                 print('files upload in s3')
                 # Update the status of the data in mongodb
-                mongo_obj.update_data(insert_id,"completed")
+                mongo_obj.update_completed(insert_id,"completed",s3_path)
             except Exception as e:
                 print(e)
                 print('Error in storing data')

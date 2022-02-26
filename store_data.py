@@ -32,6 +32,7 @@ class StoreData():
             s3 = boto3.client('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
             s3_storagepath = f'twitter/raw-files/{self.keyword}/{self.method}/{self.year}/{self.month}/{self.day}/{self.csv_file}'
             s3.upload_file(self.csv_file, 'nacci-datalake', s3_storagepath)
+            return s3_storagepath
         else:
             return None
 
