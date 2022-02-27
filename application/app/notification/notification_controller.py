@@ -1,6 +1,3 @@
-from datetime import timedelta
-from datetime import datetime
-from datetime import date
 from bson.objectid import ObjectId
 
 class NotificationController():
@@ -13,7 +10,7 @@ class NotificationController():
         try:
             resp = {}
             twitter_keyphrase_list = list()
-            for i in self.collection.find({"status":status},{} , sort=[( "_id", -1 )]):
+            for i in self.collection.find({"status":status,"method":"scraped"},{} , sort=[( "_id", -1 )]):
                 i['_id'] = str(i['_id'])
                 twitter_keyphrase_list.append(i)
             resp['data'] = twitter_keyphrase_list
@@ -29,7 +26,8 @@ class NotificationController():
             data = {
             "status":"completed",
             "key_phrase":"freekick",
-            "start_date":"2022-02-24"
+            "start_date":"2022-02-24",
+            "method":"scraped"
             }
             self.collection.insert_one(data)
         return "records inserted"
@@ -43,6 +41,16 @@ class NotificationController():
         else:
             return "less records"
         return "successfully removed"
+
+    def update_keyphrase(self, method):
+        resp = {}
+        try:
+            for i in self.collection.find({},{}, sort=[( "_id", 1 )]):
+                self.collection.update_one({"_id":ObjectId(i['_id'])}, {"$set":{"method":method}})
+            resp['data'] = "successfully updated"
+            return resp,200
+        except Exception as e:
+            return str(e),500
 
 
 def test_notification_controller():
@@ -58,4 +66,16 @@ def test_notification_controller():
     print(notification_controller.total_records())
     # print(notification_controller.get_all_keyphrases(status="pending"))
 
+def test_update_records():
+    from pymongo import MongoClient
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client['twitter']
+    notification_controller = NotificationController(db)
+    print(notification_controller.total_records())
+    print(notification_controller.delete_keyphrase())
+    if notification_controller.delete_keyphrase() == "less records":
+        print(notification_controller.insert_records())
+    print(notification_controller.delete_keyphrase())
+    print(notification_controller.total_records())
+    # print(notification_controller.get_all_keyphrases(status="pending"))
 # test_notification_controller()
