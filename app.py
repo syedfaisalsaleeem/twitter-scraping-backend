@@ -66,7 +66,7 @@ def refresh():
     return jsonify(access_token=access_token)
 
 
-@app.route("/notification", methods=["GET","UPDATE"])
+@app.route("/notification", methods=["GET","PUT"])
 @jwt_required(refresh=True)
 def notification():
     if request.method == "GET":
@@ -78,7 +78,7 @@ def notification():
         data = notification_controller.get_all_keyphrases(status=status)
         return data
 
-    if request.method == "UPDATE":
+    if request.method == "PUT":
         request_data = request.get_json()
         method = request_data['method']
         from application.app.notification.notification_controller import NotificationController
@@ -113,7 +113,7 @@ def cronjob():
         response = cronjob_controller.delete_cronjob_keyphrase(_id)
         return response
 
-@app.route("/cronjob", methods=["GET","UPDATE"])
+@app.route("/cronjob", methods=["GET","PUT"])
 @jwt_required(refresh=True)
 def controlcronjob():
     if request.method == "GET":
@@ -122,7 +122,7 @@ def controlcronjob():
         response = control_cronjob_controller.get_all_keyphrases()
         return response
 
-    if request.method == "UPDATE":
+    if request.method == "PUT":
         from application.app.cronjob.controllers.control_cronjob_controller import ControlCronJobController
         request_data = request.get_json()
         status = request_data['status']
