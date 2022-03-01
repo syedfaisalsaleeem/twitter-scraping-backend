@@ -14,7 +14,7 @@ celery.conf.update(
       "scrapped_keywords_in_twitter": {
           "task": "task_queue.scrapped_keywords_in_twitter",
           # Run every second
-          "schedule": 5,
+          "schedule": crontab(minute="*/10080"),
       }
   },
 )

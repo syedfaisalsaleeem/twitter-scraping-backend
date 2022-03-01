@@ -94,7 +94,7 @@ def cronjob():
         args = request.args
         status = args.get("status", type=str)
         cronjob_controller = CronJobController(db_twitter)
-        response = cronjob_controller.get_all_keyphrases(status)
+        response = cronjob_controller.get_all_keyphrases("cronjob")
         return response
 
     if request.method == "POST":
@@ -113,13 +113,13 @@ def cronjob():
         response = cronjob_controller.delete_cronjob_keyphrase(_id)
         return response
 
-@app.route("/cronjob", methods=["GET","PUT"])
+@app.route("/controlcronjob", methods=["GET","PUT"])
 @jwt_required(refresh=True)
 def controlcronjob():
     if request.method == "GET":
         from application.app.cronjob.controllers.control_cronjob_controller import ControlCronJobController
         control_cronjob_controller = ControlCronJobController(db_twitter)
-        response = control_cronjob_controller.get_all_keyphrases()
+        response = control_cronjob_controller.get()
         return response
 
     if request.method == "PUT":
@@ -127,7 +127,7 @@ def controlcronjob():
         request_data = request.get_json()
         status = request_data['status']
         control_cronjob_controller = ControlCronJobController(db_twitter)
-        response = control_cronjob_controller.update_cronjob_keyphrase(status)
+        response = control_cronjob_controller.update(status)
         return response
 
 if __name__ == "__main__":

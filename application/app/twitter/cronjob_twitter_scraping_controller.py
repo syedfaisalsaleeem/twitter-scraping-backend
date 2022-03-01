@@ -16,7 +16,7 @@ class CronJobTwitterScrapingController():
 
     def get_date(self):
         start_date = datetime.datetime.now()
-        end_date = datetime.datetime.now() - datetime.timedelta(hours=7)
+        end_date = datetime.datetime.now() - datetime.timedelta(hours=168)
         return str(start_date), str(end_date)
 
     def twitter_crawler(self):

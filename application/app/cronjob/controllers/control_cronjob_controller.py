@@ -8,7 +8,7 @@ class ControlCronJobController():
     def get(self):
         try:
             resp = {}
-            resp['data'] = self.collection.find_one({})
+            resp['data'] = self.collection.find_one({},{"_id":0})
             return resp,200
         except Exception as e:
             return str(e),500
