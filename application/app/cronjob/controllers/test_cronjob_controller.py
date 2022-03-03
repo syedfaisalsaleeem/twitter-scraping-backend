@@ -40,3 +40,12 @@ class TestCronJobController(unittest.TestCase):
             response = cronjob_controller.delete_cronjob_keyphrase(ids.get('_id'))
             self.assertAlmostEqual(response[1], 204)
             self.assertAlmostEqual(response[0]['data'], "successfully removed")
+
+    def test_calculate_nextcronjobtime(self):
+        from pymongo import MongoClient
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['twitter']
+        cronjob_controller = CronJobController(db)
+        minutes = "*/5"
+        response = cronjob_controller.calculate_nextcronjobtime(minutes)
+        self.assertAlmostEqual(response[1], 200)
