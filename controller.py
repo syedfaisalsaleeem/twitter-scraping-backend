@@ -51,6 +51,8 @@ class Controller():
                 store.store_csv(tweets_list2)
                 s3_path = store.store_csv_s3()
                 print('files upload in s3')
+                # delete the csv file
+                store.delete_store_csv()
                 # Update the status of the data in mongodb
                 mongo_obj.update_completed(insert_id,"completed",s3_path)
             except Exception as e:
@@ -74,7 +76,7 @@ def test_twitter_controller():
     try:
         client = MongoClient("mongodb://localhost:27017/")
         db_twitter = client['twitter']
-        res = Controller(key_phrases=['freekick','futsol','cricket'], start_date='2021-06-01', end_date="2021-06-02", method='scraped', breaking=True, db=db_twitter).start()
+        res = Controller(key_phrases=['united states'], start_date='2021-01-01', end_date="2021-01-02", method='scraped', breaking=False, db=db_twitter).start()
         if res[1] == 200:
             print("test case passed")
         else:
