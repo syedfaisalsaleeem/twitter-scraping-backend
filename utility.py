@@ -38,6 +38,11 @@ def err_resp(msg, reason, code):
     err["error_reason"] = reason
     return err, code
 
+def delete_all_csv_files(path):
+    import os
+    for file in os.listdir(path):
+        if file.endswith(".csv"):
+            os.remove(os.path.join(path, file))
 
 def test_case_fortodays_date():
     x,y,z = get_today_date()
@@ -54,3 +59,5 @@ def test_case_for_calculate_timestamp():
         return "test case passed"
     else:
         return "test case failed"
+
+# delete_all_csv_files("./")
