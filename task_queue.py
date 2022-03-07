@@ -7,7 +7,9 @@ from application.app.cronjob.controllers.cronjob_controller import CronJobTime
 from celery.schedules import crontab
 from app import minutes
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 celery = Celery("tasks",  broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(
     result_backend=app.config["CELERY_RESULT_BACKEND"],
@@ -25,7 +27,7 @@ celery.conf.update(
 @celery.task()
 def twitter_scraping(**kwargs):
     from pymongo import MongoClient
-    client = MongoClient(os.environ.get("MONGO_URI"))
+    client = MongoClient(os.getenv('MONGO_URI'))
     db_twitter = client['twitter']
     query = kwargs['query']
     try:
@@ -38,7 +40,7 @@ def twitter_scraping(**kwargs):
 def scrapped_keywords_in_twitter():
     try:
         from pymongo import MongoClient
-        client = MongoClient(os.environ.get("MONGO_URI"))
+        client = MongoClient(os.getenv('MONGO_URI'))
         db_twitter = client['twitter']
         response = ControlCronJobController(db_twitter).get()
         response = response[0]['data']["startcronjob"]

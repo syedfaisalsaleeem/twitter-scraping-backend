@@ -24,7 +24,7 @@ app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 app.config['TIMEZONE'] = 'UTC'
 
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-client = MongoClient(os.environ.get("MONGO_URI"))
+client = MongoClient(os.getenv('MONGO_URI'))
 db = client['authentication']
 db_twitter = client['twitter']
 try:
