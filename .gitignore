@@ -1,2 +1,6 @@
 __pycache__/
 *.csv
+*.bak
+*.dat
+*.dir
+test_files/
