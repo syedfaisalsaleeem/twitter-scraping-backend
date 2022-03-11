@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   nginx:
-    container_name: core_web
+    container_name: core_backend
     restart: on-failure
     image: nginx:stable
     volumes:
