@@ -43,6 +43,8 @@ def delete_all_csv_files(path):
     for file in os.listdir(path):
         if file.endswith(".csv"):
             os.remove(os.path.join(path, file))
+        if file.endswith(".gz"):
+            os.remove(os.path.join(path, file))
 
 def test_case_fortodays_date():
     x,y,z = get_today_date()

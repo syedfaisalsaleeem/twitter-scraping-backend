@@ -59,6 +59,7 @@ class CronJobTwitterScrapingController():
                 # Insert data into csv file
                 store.store_csv(tweets_list2)
                 s3_path = store.store_csv_s3()
+                store.delete_store_csv()
                 print('files upload in s3')
                 # Update the status of the data in mongodb
                 cronjob_controller.update_location(insert_id,"completed",s3_path)
