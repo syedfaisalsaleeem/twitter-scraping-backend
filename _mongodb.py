@@ -10,6 +10,9 @@ class MongoDBPython():
     def update_data(self,id,data):
         self.collection.update_one({"_id": ObjectId(id)}, {"$set":{"status":data}})
 
+    def update_completed(self,id,status,stored_place):
+        self.collection.update_one({"_id": ObjectId(id)}, {"$set":{"status":status,"location":stored_place}})
+
     def get_all_twitter_key_phrases(self):
         twitter_keyphrase_list = list()
         for i in self.collection.find({},{"key_phrase":1,"start_date":1,"end_date":1}):
