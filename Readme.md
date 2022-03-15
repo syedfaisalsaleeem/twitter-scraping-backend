@@ -218,7 +218,7 @@ This file contains all the functions which needs to be queued in redis. such as 
 
 This file contains all the updating, inserting of keywords status which are being scraped with snscrape.
 
-## Deployment
+## Deployment on EC2 process
 
 1) git clone frontend repo
 2) npm install
@@ -387,6 +387,25 @@ As the name shows it used to select the date from the calendar.
 3) Cd twitter-scraping-frontend
 4) Npm install
 5) Npm start
+
+## EC2 instance on AWS
+
+- Name: new-scr
+- Instance-id: i-0d056347577114698
+
+## Evironment Variables
+
+### Backend
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+SECRET_KEY=
+MONGO_URI=
+
+### Frontend
+
+The frontend evironment variable contains the backend enpoint
+REACT_APP_API_KEY = 'twitter-data.developingnow.co/api'
 
 ### Important Links for installing Docker:
 
