@@ -232,16 +232,16 @@ This file contains all the updating, inserting of keywords status which are bein
 10) install requirements.txt
 11) start 4 terminals with different ssh into aws.
 12) go to first terminal
-12) type tmux attach-session mytestapp
+12) type tmux attach-session -t mytestapp
 13) rerun the python server to reflect changes by ``` python3 app.py ```
 14) go to second terminal
-15) type tmux attach-session celery
+15) type tmux attach-session -t celery
 16) press ctrl+C to stop celery and type celery worker -A task_queue.celery --loglevel=info --pool=solo -n one
 17) go to third terminal
-18) type tmux attach-session celerybeat
+18) type tmux attach-session -t celerybeat
 19) press ctrl+C to stop celery and type celery beat -A task_queue.celery --loglevel=info
 20) go to fourth terminal
-21) type tmux attach-session celerybeattask
+21) type tmux attach-session -t celerybeattask
 22) press ctrl+C to stop celery and type celery worker -A task_queue.celery --loglevel=info --pool=solo -Q generic -n two
 
 ### Run in local host
